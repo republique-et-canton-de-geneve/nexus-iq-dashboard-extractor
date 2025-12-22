@@ -4,17 +4,21 @@ import ch.ge.cti.nexusiq.model.ApiApplicationDTO;
 import ch.ge.cti.nexusiq.model.ApiApplicationReportDTOV2;
 import ch.ge.cti.nexusiq.model.ApiOrganizationDTO;
 import ch.ge.cti.nexusiq.model.ApiReportComponentDTOV2;
-import ch.ge.cti.nexusiq.model.ApiSecurityIssueDTO;
 import ch.ge.cti.nexusiqdashboard.ApiException;
+import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
-import org.yaml.snakeyaml.util.ArrayUtils;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
-
-import static org.springframework.util.ObjectUtils.isEmpty;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
@@ -24,7 +28,7 @@ public class ExtractorService {
     private NexusIqAccessService nexusIqAccessService;
 
     /**
-     * This is the main method of this application.
+     * This is the main method of the application.
      * It generates a JSON file with all applications' vulnerabilities.
      */
     public void generateResultFile() throws ApiException {
@@ -32,47 +36,92 @@ public class ExtractorService {
         var reports = nexusIqAccessService.getApplicationReport();
         log.info("Number of reports: {}", reports.length);
 
-        // for every application report, append the JSON to the
-        StringBuilder sbFullJson = new StringBuilder();
+        // for every application, for every component, for every security issue, create a Result
+        AtomicInteger counter = new AtomicInteger(0);
+        var allApplicationsResults = new ArrayList<Result>();
         Arrays.stream(reports)
                 .forEach(report -> {
-                    var json = getJsonForApplication(report);
-                    sbFullJson.append(json);
+                    List<Result> applicationResults = getApplicationResults(report);
+                    allApplicationsResults.addAll(applicationResults);
+                    if (counter.incrementAndGet() % 25 == 0) {
+                        log.info("Already processed {} reports", counter);
+                    }
                 });
 
+        // serialize the results into JSON format
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(allApplicationsResults);
+
         // dump the full JSON into a result file
+        dumpOutput(jsonString);
     }
 
-    private String getJsonForApplication(ApiApplicationReportDTOV2 report) {
+    /**
+     * Gets every security issues report of every component of the specified application.
+     */
+    private List<Result> getApplicationResults(ApiApplicationReportDTOV2 report) {
         var applicationReport = nexusIqAccessService.getApplicationReport(report.getReportDataUrl());
+        var applicationResults = new ArrayList<Result>();
 
-        var application = nexusIqAccessService.getApplication(report.getApplicationId());
-        log.debug("Application = {}", application.getName());
+        if (applicationReport != null) {     // this happens sometimes
+            var application = nexusIqAccessService.getApplication(report.getApplicationId());
+            log.debug("Application = {}", application.getName());
 
-        var organization = nexusIqAccessService.getOrganization(application.getOrganizationId());
-        log.debug("Organization = {}", organization.getName());
+            var organization = nexusIqAccessService.getOrganization(application.getOrganizationId());
+            log.debug("Organization = {}", organization.getName());
 
-        applicationReport.getComponents()
-                .forEach(comp -> getSecurityIssues(comp, application, organization));
+            applicationReport.getComponents()
+                    .forEach(comp -> {
+                        List<Result> componentResults = getComponentResults(comp, application, organization);
+                        applicationResults.addAll(componentResults);
+                    });
+        }
 
-        return null;
+        return applicationResults;
     }
 
-    private ApiSecurityIssueDTO getSecurityIssues(
+    /**
+     * Gets every security issues report of the specified component.
+     */
+    private List<Result> getComponentResults(
             ApiReportComponentDTOV2 component, ApiApplicationDTO application, ApiOrganizationDTO organization) {
-        var securityData= component.getSecurityData();
-        if (securityData != null) {
+        var componentResults = new ArrayList<Result>();
+        if (component.getSecurityData() != null) {
             var securityIssues = component.getSecurityData().getSecurityIssues();
-            if (! isEmpty(securityIssues)) {
-                log.info("Application {} (organization = {}) has component [{}] with security issues {}",
+            log.debug("Application {} (organization = {}) has component [{}] with security issues {}",
                         application.getName(), organization.getName(), component.getDisplayName(), securityIssues);
-                if (securityIssues[0].getAnalysis() != null) {
-                    log.info("Analysis = [{}]", securityIssues[0].getAnalysis());
-                    System.exit(0);
-                }
-            }
+            Arrays.stream(securityIssues)
+                    .forEach(securityIssue -> {
+                        var result = Result.builder()
+                                .organizationName(organization.getName())
+                                .applicationName(application.getName())
+                                .componentDisplayName(component.getDisplayName())
+                                .severityIssueSource(securityIssue.getSource())
+                                .severityIssueReference(securityIssue.getReference())
+                                .severityIssueSeverity(securityIssue.getSeverity())
+                                .severityIssueStatus(securityIssue.getStatus())
+                                .severityIssueUrl(securityIssue.getUrl())
+                                .severityIssueThreatCategory(securityIssue.getThreatCategory())
+                                .severityIssueCwe(securityIssue.getCwe())
+                                .build();
+                        componentResults.add(result);
+                        if (securityIssue.getAnalysis() != null) {
+                            // a trace, just to know that an analysis is not empty
+                            log.warn("Analysis = [{}]", securityIssue.getAnalysis());
+                        }
+                    });
         }
-        return null;
+        return componentResults;
+    }
+
+    private void dumpOutput(String jsonString) {
+        var formattedDate = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        var path = Path.of("./output/result_" + formattedDate + ".json");
+        try {
+            Files.writeString(path, jsonString);
+        } catch (IOException e) {
+            throw new RuntimeException("Error while writing JSON output into file " + path, e);
+        }
     }
 
 }

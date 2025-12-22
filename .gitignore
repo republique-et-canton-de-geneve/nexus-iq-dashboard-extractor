@@ -8,4 +8,4 @@ target/
 # Application files
 src/main/resources/application.yml
 logs/
-
+output/

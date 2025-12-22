@@ -1,7 +1,7 @@
 # nexus-iq-dashboard-extractor
 
 A Java application to retrieve the applications' vulnerabilities detected by
-Nexus IQ (aka CLM and Sonatype Lifecycle). 
+Nexus IQ (aka CLM, aka Sonatype Lifecycle). 
 
 At the State of Geneva, the complete use case is the following:
 1. The continuous integration environment (at the State of Geneva, is consists in

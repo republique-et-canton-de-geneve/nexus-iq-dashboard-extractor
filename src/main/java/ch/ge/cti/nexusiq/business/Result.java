@@ -1,11 +1,13 @@
 package ch.ge.cti.nexusiq.business;
 
+import lombok.Builder;
 import lombok.Setter;
 
 /**
  * The result ...
  */
 @Setter
+@Builder
 public class Result {
 
     /**
@@ -67,12 +69,5 @@ public class Result {
      * Example: 770.
      */
     String severityIssueCwe;
-
-    /**
-     * Severity issue analysisStateCVSS vector.
-     */
-    String analyisState;
-
-
 
 }
