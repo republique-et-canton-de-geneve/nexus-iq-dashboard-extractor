@@ -1,9 +1,10 @@
 package ch.ge.cti.nexusiq.model;
 
 import lombok.Getter;
-import lombok.Setter;
 
 /**
+ * The result of a call to api/v2/reports/applications.
+ *
  * Quote from the Nexus IQ OpenAPI:
  * "The response JSON contains URLs to view the report data in html and pdf format,
  * for each application to which you have access.
@@ -14,8 +15,9 @@ import lombok.Setter;
  * reportDataUrl is a link to view the most recent report data."
  */
 @Getter
-@Setter
 public class ApiApplicationReportDTOV2 {
+
+    private String applicationId;
 
     private String reportDataUrl;
 

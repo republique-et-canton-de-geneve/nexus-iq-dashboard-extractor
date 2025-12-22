@@ -28,10 +28,6 @@
 
     <properties>
         <!-- plugin versions -->
-        <!--
-        <jaxb2-maven-plugin>3.3.0</jaxb2-maven-plugin>
-        <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
-        -->
 
         <!-- JAR versions -->
         <gson.version>2.13.2</gson.version>
@@ -116,6 +112,8 @@
 
     <build>
         <plugins>
+
+            <!-- TO BE REMOVED -->
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -126,8 +124,6 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <!-- proprietes : voir https://openapi-generator.tech/docs/generators/java -->
-                            <inputSpec>${project.basedir}/doc/iq-api.json</inputSpec>
                             <generatorName>java</generatorName>
                             <generateApiTests>false</generateApiTests>
                             <generateModelTests>false</generateModelTests>
@@ -140,10 +136,10 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -154,39 +150,6 @@
                     <release>21</release>
                 </configuration>
             </plugin>
-			<!--
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>${jaxb2-maven-plugin}</version>
-                <executions>
-                    <execution>
-                        <id>xjc</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <xjbSources>
-                        <xjbSource>src/main/resources/backoffice/global.xjb</xjbSource>
-                    </xjbSources>
-                    <sources>
-                        <source>src/main/resources/backoffice/xsd/xsd0.xsd</source>
-                    </sources>
-                    <clearOutputDir>false</clearOutputDir>
-                </configuration>
-            </plugin>
-			-->
-            <!--
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <addResources>false</addResources>
-                </configuration>
-            </plugin>
-            -->
 			<!--
             <plugin>
                 <groupId>org.jacoco</groupId>

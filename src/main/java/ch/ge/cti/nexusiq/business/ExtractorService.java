@@ -1,55 +1,78 @@
 package ch.ge.cti.nexusiq.business;
 
-import ch.ge.cti.nexusiq.configuration.WebClientProvider;
+import ch.ge.cti.nexusiq.model.ApiApplicationDTO;
+import ch.ge.cti.nexusiq.model.ApiApplicationReportDTOV2;
+import ch.ge.cti.nexusiq.model.ApiOrganizationDTO;
+import ch.ge.cti.nexusiq.model.ApiReportComponentDTOV2;
+import ch.ge.cti.nexusiq.model.ApiSecurityIssueDTO;
 import ch.ge.cti.nexusiqdashboard.ApiException;
-import ch.ge.cti.nexusiqdashboard.marshalling.ApiApplicationReportDTOV2;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.yaml.snakeyaml.util.ArrayUtils;
+
+import java.util.Arrays;
+
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 @Slf4j
 public class ExtractorService {
 
     @Resource
-    private WebClientProvider webClientProvider;
+    private NexusIqAccessService nexusIqAccessService;
 
     /**
      * This is the main method of this application.
-     * Generates the JSON file with all applications' vulnerabilities.
+     * It generates a JSON file with all applications' vulnerabilities.
      */
     public void generateResultFile() throws ApiException {
-        // get all reports
-        var reports = getApplicationReports();
+        // get all application reports
+        var reports = nexusIqAccessService.getApplicationReport();
         log.info("Number of reports: {}", reports.length);
 
-        // ...
+        // for every application report, append the JSON to the
+        StringBuilder sbFullJson = new StringBuilder();
+        Arrays.stream(reports)
+                .forEach(report -> {
+                    var json = getJsonForApplication(report);
+                    sbFullJson.append(json);
+                });
+
+        // dump the full JSON into a result file
     }
 
-    private ApiApplicationReportDTOV2[] getApplicationReports() {
-        try {
-            var uri = "/api/v2/reports/applications";
-            return webClientProvider.getWebClient()
-                    .get()
-                    .uri(uri)
-                    .retrieve()
-                    .bodyToMono(ApiApplicationReportDTOV2[].class)
-                    .block();
-        } catch (RuntimeException e) {
-            handleInvocationError(e);
-            return new ApiApplicationReportDTOV2[] {};
+    private String getJsonForApplication(ApiApplicationReportDTOV2 report) {
+        var applicationReport = nexusIqAccessService.getApplicationReport(report.getReportDataUrl());
+
+        var application = nexusIqAccessService.getApplication(report.getApplicationId());
+        log.debug("Application = {}", application.getName());
+
+        var organization = nexusIqAccessService.getOrganization(application.getOrganizationId());
+        log.debug("Organization = {}", organization.getName());
+
+        applicationReport.getComponents()
+                .forEach(comp -> getSecurityIssues(comp, application, organization));
+
+        return null;
+    }
+
+    private ApiSecurityIssueDTO getSecurityIssues(
+            ApiReportComponentDTOV2 component, ApiApplicationDTO application, ApiOrganizationDTO organization) {
+        var securityData= component.getSecurityData();
+        if (securityData != null) {
+            var securityIssues = component.getSecurityData().getSecurityIssues();
+            if (! isEmpty(securityIssues)) {
+                log.info("Application {} (organization = {}) has component [{}] with security issues {}",
+                        application.getName(), organization.getName(), component.getDisplayName(), securityIssues);
+                if (securityIssues[0].getAnalysis() != null) {
+                    log.info("Analysis = [{}]", securityIssues[0].getAnalysis());
+                    System.exit(0);
+                }
+            }
         }
-    }
-
-    /**
-     * Error during the call to NexusServices.
-     * Handles cases where the error is neither a 4xx nor a 5xx. Examples: NexusServices is unavailable;
-     * the URL of NexusServices is incorrect.
-     * The best solution found is a try/catch block to handle this case,
-     * see <a href="https://stackoverflow.com/questions/73989083/handling-server-unavailability-with-webclient">stackoverflow/handling-server-unavailability-with-webclient</a>.
-     */
-    private void handleInvocationError(RuntimeException exception) {
-        log.error("Error during the call to Nexus IQ:", exception);
+        return null;
     }
 
 }
