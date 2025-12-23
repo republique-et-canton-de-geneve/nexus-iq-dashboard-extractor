@@ -3,6 +3,7 @@ app:
         url: TO_BE_PROVIDED        # everything until "api/v2"
         username: TO_BE_PROVIDED   # the username or the token's user code
         password: TO_BE_PROVIDED   # the password or the token's passcode
+#    stop-after: 10                 # for debugging, see class ExtractorService#stopAfter
 
 spring:
     main:

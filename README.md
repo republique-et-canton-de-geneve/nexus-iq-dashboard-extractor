@@ -65,3 +65,13 @@ If you use the IntelliJ IDE, running the application from there is the most
 convenient way.
 
 Just run class `Application`.
+
+## Miscellaneous
+
+Nexus IQ's Open API is quite large and this application uses only a very small
+fraction of it.
+Therefore, in order to speed up compilation, no usage is made of the
+`openapi-generator-maven-plugin` which is commonly used to generate the
+marshalling classes and the service classes.
+Instead the marshalling classes have been manually created and added to the
+source classes.

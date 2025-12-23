@@ -4,10 +4,10 @@ import ch.ge.cti.nexusiq.model.ApiApplicationDTO;
 import ch.ge.cti.nexusiq.model.ApiApplicationReportDTOV2;
 import ch.ge.cti.nexusiq.model.ApiOrganizationDTO;
 import ch.ge.cti.nexusiq.model.ApiReportComponentDTOV2;
-import ch.ge.cti.nexusiqdashboard.ApiException;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -24,6 +24,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class ExtractorService {
 
+    /**
+     * For debugging only: to stop the processing after having processed
+     * a small number of applications.
+     * When using it, comment out temporarily the "parallel()" stream below.
+     *
+     * In production, don't use it or use an exaggerated value.
+     */
+    @Value("${app.stop-after:1000000}")
+    private int stopAfter;
+
     @Resource
     private NexusIqAccessService nexusIqAccessService;
 
@@ -31,22 +41,31 @@ public class ExtractorService {
      * This is the main method of the application.
      * It generates a JSON file with all applications' vulnerabilities.
      */
-    public void generateResultFile() throws ApiException {
+    public void generateResultFile() {
         // get all application reports
         var reports = nexusIqAccessService.getApplicationReport();
         log.info("Number of reports: {}", reports.length);
 
         // for every application, for every component, for every security issue, create a Result
+        final int NB_REPORTS_FOR_LOGGING = 25;
         AtomicInteger counter = new AtomicInteger(0);
         var allApplicationsResults = new ArrayList<Result>();
-        Arrays.stream(reports)
-                .forEach(report -> {
-                    List<Result> applicationResults = getApplicationResults(report);
-                    allApplicationsResults.addAll(applicationResults);
-                    if (counter.incrementAndGet() % 25 == 0) {
-                        log.info("Already processed {} reports", counter);
-                    }
-                });
+        try {
+            Arrays.stream(reports)
+                    .parallel()    // comment out this line if stopAfter is used
+                    .forEach(report -> {
+                        List<Result> applicationResults = getApplicationResults(report);
+                        allApplicationsResults.addAll(applicationResults);
+                        if (counter.incrementAndGet() % NB_REPORTS_FOR_LOGGING == 0) {
+                            log.info("Already processed {} reports", counter);
+                        }
+                        if (counter.get() >= stopAfter) {
+                            throw new ScanInterruptedException("Forcefully stopping after processing " + stopAfter + " reports");
+                        }
+                    });
+        } catch (ScanInterruptedException e) {
+            log.warn("{}", e.getMessage());
+        }
 
         // serialize the results into JSON format
         Gson gson = new Gson();
@@ -115,12 +134,18 @@ public class ExtractorService {
     }
 
     private void dumpOutput(String jsonString) {
+        var outputDir = "output";
         var formattedDate = new SimpleDateFormat("yyyyMMdd").format(new Date());
-        var path = Path.of("./output/result_" + formattedDate + ".json");
+        var fileName = outputDir + "/result_" + formattedDate + ".json";
+        var path = Path.of(fileName);
         try {
+            Files.deleteIfExists(path);
+            Files.createDirectories(Path.of("output"));
+            Files.createFile(path);
             Files.writeString(path, jsonString);
+            log.info("Output successfully dumped in file {}", fileName);
         } catch (IOException e) {
-            throw new RuntimeException("Error while writing JSON output into file " + path, e);
+            throw new IllegalStateException("Error while handling JSON output file " + path, e);
         }
     }
 

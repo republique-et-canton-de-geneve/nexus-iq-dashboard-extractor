@@ -1,7 +1,6 @@
 package ch.ge.cti.nexusiq;
 
 import ch.ge.cti.nexusiq.business.ExtractorService;
-import ch.ge.cti.nexusiqdashboard.ApiException;
 import jakarta.annotation.Resource;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,7 +17,7 @@ public class Application implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws InterruptedException, ApiException {
+    public void run(String... args) throws InterruptedException {
         extractorService.generateResultFile();
     }
 
