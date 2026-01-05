@@ -75,3 +75,9 @@ Therefore, in order to speed up compilation, no usage is made of the
 marshalling classes and the service classes.
 Instead the marshalling classes have been manually created and added to the
 source classes.
+
+The sources of this project include a GitHub workflow that implements the
+project's continuous integration.
+In particular, the workflow spawns a Sonar analysis; the detected issues
+can be viewed in the
+[SonarCloud project](https://sonarcloud.io/project/overview?id=republique-et-canton-de-geneve_nexus-iq-dashboard-extractor).
