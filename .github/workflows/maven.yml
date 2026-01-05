@@ -12,12 +12,23 @@ jobs:
   build-and-sonar:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Set up JDK 21
         uses: actions/setup-java@v2
         with:
           java-version: '21'
           distribution: 'adopt'
+
+      - name: Cache Maven dependencies (delete the cache whenever the POM is changed)
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: Build and Sonar
         run: mvn -B -U verify sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=etat-de-geneve-github -Dsonar.projectKey=republique-et-canton-de-geneve_nexus-iq-dashboard-extractor
         env:
