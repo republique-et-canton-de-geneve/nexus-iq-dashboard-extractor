@@ -34,6 +34,7 @@
     </distributionManagement>
 
     <properties>
+        <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
         <gson.version>2.13.2</gson.version>
     </properties>
 
@@ -66,6 +67,15 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar-maven-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
