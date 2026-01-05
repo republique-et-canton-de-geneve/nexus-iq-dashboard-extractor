@@ -13,6 +13,13 @@
     <artifactId>nexus-iq-dashboard-extractor</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <scm>
+        <connection>scm:git:https://github.com/republique-et-canton-de-geneve/nexus-iq-dashboard-extractor.git</connection>
+        <developerConnection>scm:git:https://github.com/republique-et-canton-de-geneve/nexus-iq-dashboard-extractor.git</developerConnection>
+        <url>https://github.com/republique-et-canton-de-geneve/nexus-iq-dashboard-extractor</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <distributionManagement>
         <repository>
             <id>internal.project.release</id>

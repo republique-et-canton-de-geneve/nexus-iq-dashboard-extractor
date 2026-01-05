@@ -66,7 +66,7 @@ convenient way.
 
 Just run class `Application`.
 
-## Miscellaneous
+# Miscellaneous
 
 Nexus IQ's Open API is quite large and this application uses only a very small
 fraction of it.
