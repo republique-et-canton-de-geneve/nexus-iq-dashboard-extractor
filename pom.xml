@@ -11,7 +11,7 @@
 
     <groupId>ch.ge.cti</groupId>
     <artifactId>nexus-iq-dashboard-extractor</artifactId>
-    <version>1.5</version>
+    <version>1.6-SNAPSHOT</version>
 
     <scm>
         <connection>scm:git:https://github.com/republique-et-canton-de-geneve/nexus-iq-dashboard-extractor.git</connection>
