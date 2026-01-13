@@ -38,33 +38,40 @@ Do the following:
 - Copy file `application-base.yml` (this file is under Git control)
   to a new file `application.yml` (this file is under Git ignore),
   in the same directory
-- Edit file `application.yml`, provide the missing values;
-  their value is `TO_BE_PROVIDED`.
-  For the particular case of property `app.trustStorePassword`, don't do anything yet
+- Edit file `application.yml` and replace the values set to `TO_BE_PROVIDED`
+  by appropriate values.
 
 ## Running locally
 
-There are several ways to do so.
+There are several equivalent ways to do so.
+They all generate an output file named `result_<DATE>.json` in
+subdirectory `output`.
 
-### Maven
+### With Maven
 
 ```
 mvn spring-boot:run
 ```
 Possibly with option `-Dspring-boot.run.jvmArguments="-Dcodegen.skip"`.
 
-### JAR
+### With the JAR file
 
 ```
 $JAVA_HOME/bin/java -jar target/nexus-iq-dashboard-extractor-<VERSION>.jar
 ```
 
-### IntelliJ
+### With IntelliJ
 
 If you use the IntelliJ IDE, running the application from there is the most
 convenient way.
 
 Just run class `Application`.
+
+# Running the application at État de Genève
+
+The instructions for releasing the application, deploying it and making Splunk
+leverage the output are provided in a separate Git project stored in
+État de Genève's internal GitLab server.
 
 # Miscellaneous
 
