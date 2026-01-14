@@ -7,7 +7,6 @@ import ch.ge.cti.nexusiq.model.ApiReportComponentDTOV2;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,16 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 @Slf4j
 public class ExtractorService {
-
-    /**
-     * For debugging only: to stop the processing after having processed
-     * a small number of applications.
-     * When using it, comment out temporarily the "parallel()" stream below.
-     *
-     * In production, don't use it or use an exaggerated value.
-     */
-    @Value("${app.stop-after:1000000}")
-    private int stopAfter;
 
     @Resource
     private NexusIqAccessService nexusIqAccessService;
@@ -52,15 +41,12 @@ public class ExtractorService {
         var allApplicationsResults = new ArrayList<Result>();
         try {
             Arrays.stream(reports)
-                    .parallel()    // comment out this line if stopAfter is used
+                    .parallel()
                     .forEach(report -> {
                         List<Result> applicationResults = getApplicationResults(report);
                         allApplicationsResults.addAll(applicationResults);
                         if (counter.incrementAndGet() % NB_REPORTS_FOR_LOGGING == 0) {
                             log.info("Already processed {} reports", counter);
-                        }
-                        if (counter.get() >= stopAfter) {
-                            throw new ScanInterruptedException("Forcefully stopping after processing " + stopAfter + " reports");
                         }
                     });
         } catch (ScanInterruptedException e) {

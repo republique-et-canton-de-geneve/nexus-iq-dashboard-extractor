@@ -31,7 +31,7 @@ mvn package -Dcodegen.skip
 
 # Running the application locally
 
-## Pre-step 1 : configuring a user in Nexus IQ
+## Pre-step 1: configuring a user in Nexus IQ
 
 Do the following:
 - As an administrator, log on to the Nexus IQ GUI
@@ -39,13 +39,13 @@ Do the following:
   - Click on `System Preferences` > `Users` > `Create User`
 - Mentally select an existing role or create an ad hoc role. At État de Genève,
   we create an ad hoc role with permission `View IQ elements`
-- Make sure the above user has the above:
+- Make sure the above user has the above role:
   - Click on `Orgs and Policies`
   - Select the Root Organization
   - Click on tab `Access`
   - In sub-pane `Access`, make sure the user has the role
 
-## Pre-step 2 : configuring the application: property file
+## Pre-step 2: configuring the application's property file
 
 Do the following:
 - Go to directory `src/main/resources`
@@ -86,6 +86,10 @@ Just run class `Application`.
 The instructions for releasing the application, deploying it and making Splunk
 leverage the output are provided in a separate Git project stored in
 État de Genève's internal GitLab server.
+
+Note that the file `application.yml` embedded in the JAR file can easily be
+overridden, for example by using the JVM option
+`-Dspring.config.location=file:path_to_file_application_yml`.
 
 # Miscellaneous
 
