@@ -7,6 +7,7 @@ import lombok.ToString;
  * The "analysis" property within an item in "securityIssues".
  * Maybe useless: always empty at Etat de Geneve.
  */
+@SuppressWarnings("java:S1258")  // remove Sonar issue
 @Getter
 @ToString
 public class ApiSecurityIssueAnalysisDTO {

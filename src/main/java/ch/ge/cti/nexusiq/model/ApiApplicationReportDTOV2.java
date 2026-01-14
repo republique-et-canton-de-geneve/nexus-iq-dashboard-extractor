@@ -14,6 +14,7 @@ import lombok.Getter;
  * reportHtmlUrl are links to view the pdf version of the report.The response field
  * reportDataUrl is a link to view the most recent report data."
  */
+@SuppressWarnings("java:S1258")  // remove Sonar issue
 @Getter
 public class ApiApplicationReportDTOV2 {
 

@@ -6,6 +6,7 @@ import lombok.ToString;
 /**
  * An item in a "securityIssues" property within a "securityData".
  */
+@SuppressWarnings("java:S1258")  // remove Sonar issue
 @Getter
 @ToString
 public class ApiSecurityIssueDTO {

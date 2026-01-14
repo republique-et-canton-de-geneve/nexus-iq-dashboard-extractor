@@ -7,6 +7,7 @@ import java.util.List;
 /**
  * The result of a call to api/v2/applications/<{applicationId}/reports/{scanId}/raw.
  */
+@SuppressWarnings("java:S1258")  // remove Sonar issue
 @Getter
 public class ApiReportRawDataDTOV2 {
 
