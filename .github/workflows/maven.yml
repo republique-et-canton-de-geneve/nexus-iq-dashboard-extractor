@@ -4,7 +4,7 @@ name: CI with Maven
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, sonar ]
   pull_request:
     branches: [ main ]
 
