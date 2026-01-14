@@ -1,9 +1,9 @@
 app:
     nexus-iq:
-        url: TO_BE_PROVIDED        # everything until "api/v2"
-        username: TO_BE_PROVIDED   # the username or the token's user code
+        url: TO_BE_PROVIDED        # everything until "api/v2". Should end with a "/" character
+        username: TO_BE_PROVIDED   # the username or the token's user code. See the README
         password: TO_BE_PROVIDED   # the password or the token's passcode
-#    stop-after: 10                 # used for debugging, see class ExtractorService#stopAfter
+#    stop-after: 10                 # used for debugging (but a modification in required in the application - see ExtractorService#stopAfter)
 
 spring:
     main:

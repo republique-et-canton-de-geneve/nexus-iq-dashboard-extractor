@@ -14,7 +14,7 @@ public class ApiSecurityIssueDTO {
 
     private String reference;
 
-    private float severity;
+    private Float severity;
 
     private String status;
 

@@ -31,7 +31,21 @@ mvn package -Dcodegen.skip
 
 # Running the application locally
 
-## Pre-step : configuring the application: property file
+## Pre-step 1 : configuring a user in Nexus IQ
+
+Do the following:
+- As an administrator, log on to the Nexus IQ GUI
+- Mentally select an existing user or create an ad hoc user. In the latter case:
+  - Click on `System Preferences` > `Users` > `Create User`
+- Mentally select an existing role or create an ad hoc role. At État de Genève,
+  we create an ad hoc role with permission `View IQ elements`
+- Make sure the above user has the above:
+  - Click on `Orgs and Policies`
+  - Select the Root Organization
+  - Click on tab `Access`
+  - In sub-pane `Access`, make sure the user has the role
+
+## Pre-step 2 : configuring the application: property file
 
 Do the following:
 - Go to directory `src/main/resources`
