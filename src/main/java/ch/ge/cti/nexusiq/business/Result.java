@@ -2,6 +2,9 @@ package ch.ge.cti.nexusiq.business;
 
 import lombok.Builder;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * The result ...
@@ -27,6 +30,10 @@ public class Result {
      * Example: "@angular/compiler : 14.3.0".
      */
     String componentDisplayName;
+
+    String componentIdentifierFormat;
+
+    Map<String, String> componentIdentifierCoordinates;
 
     /**
      * Security issue source.

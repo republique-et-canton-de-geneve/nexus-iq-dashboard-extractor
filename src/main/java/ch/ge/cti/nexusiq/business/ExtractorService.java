@@ -101,6 +101,8 @@ public class ExtractorService {
                                 .organizationName(organization.getName())
                                 .applicationName(application.getName())
                                 .componentDisplayName(component.getDisplayName())
+                                .componentIdentifierFormat((component.getComponentIdentifier().getFormat()))
+                                .componentIdentifierCoordinates((component.getComponentIdentifier().getCoordinates()))
                                 .severityIssueSource(securityIssue.getSource())
                                 .severityIssueReference(securityIssue.getReference())
                                 .severityIssueSeverity(securityIssue.getSeverity())

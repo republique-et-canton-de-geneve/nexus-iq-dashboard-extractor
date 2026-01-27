@@ -13,6 +13,8 @@ public class ApiReportComponentDTOV2 {
 
     private String displayName;
 
+    private ApiComponentIdentifierDTOV2 componentIdentifier;
+
     private ApiSecurityDataDTO securityData;
 
 }
