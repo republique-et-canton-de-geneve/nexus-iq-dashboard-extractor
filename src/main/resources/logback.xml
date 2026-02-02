@@ -15,7 +15,7 @@
             <totalSizeCap>10MB</totalSizeCap>
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%date{HH:mm:ss.SSS} %-5level [%t]  %msg  [%logger{5} L%line] %n</pattern>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t]  %msg  [%logger{5} L%line] %n</pattern>
         </encoder>
     </appender>
 
