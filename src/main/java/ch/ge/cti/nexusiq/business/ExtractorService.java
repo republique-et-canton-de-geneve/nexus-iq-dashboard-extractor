@@ -75,9 +75,12 @@ public class ExtractorService {
             var organization = nexusIqAccessService.getOrganization(application.getOrganizationId());
             log.debug("Organization = {}", organization.getName());
 
+            var evaluationDate = report.getEvaluationDate();
+
             applicationReport.getComponents()
                     .forEach(comp -> {
-                        List<Result> componentResults = getComponentResults(comp, application, organization);
+                        List<Result> componentResults = getComponentResults(
+                                comp, application, organization, evaluationDate);
                         applicationResults.addAll(componentResults);
                     });
         }
@@ -89,7 +92,10 @@ public class ExtractorService {
      * Gets every security issues report of the specified component.
      */
     private List<Result> getComponentResults(
-            ApiReportComponentDTOV2 component, ApiApplicationDTO application, ApiOrganizationDTO organization) {
+            ApiReportComponentDTOV2 component,
+            ApiApplicationDTO application,
+            ApiOrganizationDTO organization,
+            String evaluationDate) {
         var componentResults = new ArrayList<Result>();
         if (component.getSecurityData() != null) {
             var securityIssues = component.getSecurityData().getSecurityIssues();
@@ -100,6 +106,7 @@ public class ExtractorService {
                         var result = Result.builder()
                                 .organizationName(organization.getName())
                                 .applicationName(application.getName())
+                                .evaluationDate(evaluationDate)
                                 .componentDisplayName(component.getDisplayName())
                                 .componentIdentifierFormat((component.getComponentIdentifier().getFormat()))
                                 .componentIdentifierCoordinates((component.getComponentIdentifier().getCoordinates()))

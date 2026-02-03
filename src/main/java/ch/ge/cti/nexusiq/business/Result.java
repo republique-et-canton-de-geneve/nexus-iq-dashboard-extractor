@@ -2,7 +2,6 @@ package ch.ge.cti.nexusiq.business;
 
 import lombok.Builder;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -24,6 +23,12 @@ public class Result {
      * Example: "edem-webapp-solde".
      */
     String applicationName;
+
+    /**
+     * Date of the Nexus IQ assessment.
+     * Example: "2026-02-03T01:48:09.665+01:00".
+     */
+    String evaluationDate;
 
     /**
      * Name of the application's component that has security issues.

@@ -18,6 +18,8 @@ import lombok.Getter;
 @Getter
 public class ApiApplicationReportDTOV2 {
 
+    private String evaluationDate;
+
     private String applicationId;
 
     private String reportDataUrl;

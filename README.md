@@ -58,8 +58,6 @@ Do the following:
 ## Running locally
 
 There are several equivalent ways to do so.
-They all generate an output file named `result_<DATE>.json` in
-subdirectory `output`.
 
 ### With Maven
 
@@ -80,6 +78,36 @@ If you use the IntelliJ IDE, running the application from there is the most
 convenient way.
 
 Just run class `Application`.
+
+## Output
+
+Running the application generates a JSON output file `result_<DATE>.json` in
+subdirectory `output`.
+The JSON file consists in an array of reports.
+Example of a report:
+```
+{
+    "organizationName": "SOME-DEPARTMENT-OF-THE-ORGANIZATION",
+    "applicationName": "SOME-APPLICATION",
+    "evaluationDate": "2025-09-26T09:07:02.681+02:00",
+    "componentDisplayName": "org.apache.commons : commons-lang3 : 3.1",
+    "componentIdentifierFormat": "maven",
+    "componentIdentifierCoordinates": {
+        "artifactId": "commons-lang3",
+        "classifier": "",
+        "extension": "jar",
+        "groupId": "org.apache.commons",
+        "version": "3.1"
+    },
+    "severityIssueSource": "cve",
+    "severityIssueReference": "CVE-2025-48924",
+    "severityIssueSeverity": 6.9,
+    "severityIssueStatus": "Open",
+    "severityIssueUrl": "https://www.cve.org/CVERecord?id=CVE-2025-48924",
+    "severityIssueThreatCategory": "severe",
+    "severityIssueCwe": "674"
+},
+```
 
 # Running the application at État de Genève
 
