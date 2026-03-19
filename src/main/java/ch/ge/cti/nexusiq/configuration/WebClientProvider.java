@@ -57,7 +57,7 @@ public class WebClientProvider {
         log.info("URL NexusIQ = {}", url);
 
         var httpClient = HttpClient.create();
-        int maxInMemorySize = 5 * 1024 * 1024;  // 5 MB
+        int maxInMemorySize = 20 * 1024 * 1024;  // 20 MB
 
         webClient = WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
