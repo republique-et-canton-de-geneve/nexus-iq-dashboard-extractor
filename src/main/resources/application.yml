@@ -1,0 +1,9 @@
+app:
+    nexus-iq:
+        url: ${APP_NEXUS_IQ_URL}
+        username: ${APP_NEXUS_IQ_USERNAME}
+        password: ${APP_NEXUS_IQ_PASSWORD}
+
+spring:
+    main:
+        web-application-type: NONE

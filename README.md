@@ -1,9 +1,10 @@
 # nexus-iq-dashboard-extractor
 
 A Java application to retrieve the applications' vulnerabilities detected by
-Nexus IQ (aka CLM, aka Sonatype Lifecycle). 
+Nexus IQ (aka CLM, aka Sonatype Lifecycle).
 
 At the State of Geneva, the complete use case is the following:
+
 1. The continuous integration environment (at the State of Geneva, is consists in
    the GitLab CI pipelines of the various applications) performs the Nexus IQ
    analysis of the applications and sends the vulnerabilities reports to the
@@ -16,24 +17,20 @@ At the State of Geneva, the complete use case is the following:
 1. On Splunk, a previously configured dashboard displays the vulnerabilities to
    the end user.
 
-# Building the application
+## Building the application
 
 With Maven 3 and Java 21+:
-```
+
+```shell
 mvn clean package
 ```
 
-After the first execution of the above command, the API classes have been generated,
-so the following command can be used to speed up the compilation process:
-```
-mvn package -Dcodegen.skip
-```
+## Running the application locally
 
-# Running the application locally
-
-## Pre-step 1: configuring a user in Nexus IQ
+### Pre-step 1: configuring a user in Nexus IQ
 
 Do the following:
+
 - As an administrator, log on to the Nexus IQ GUI
 - Mentally select an existing user or create an ad hoc user. In the latter case:
   - Click on `System Preferences` > `Users` > `Create User`
@@ -45,47 +42,71 @@ Do the following:
   - Click on tab `Access`
   - In sub-pane `Access`, make sure the user has the role
 
-## Pre-step 2: configuring the application's property file
+### Pre-step 2: integration
+
+The project come with an .env.base to test locally copy it to .env and configure your value inside.
 
 Do the following:
-- Go to directory `src/main/resources`
-- Copy file `application-base.yml` (this file is under Git control)
-  to a new file `application.yml` (this file is under Git ignore),
+
+- Go to directory `.`
+- Copy file `.env.base` (this file is under Git control)
+  to a new file `.env` (this file is under Git ignore),
   in the same directory
-- Edit file `application.yml` and replace the values set to `TO_BE_PROVIDED`
+- Edit file `.env` and replace the values set to `TO_BE_PROVIDED`
   by appropriate values.
 
-## Running locally
+You can test .env configuration with vscode plugin [humao.rest-client].
+
+```http
+GET {{$dotenv APP_NEXUS_IQ_URL}}api/v2/reports/applications
+Accept: application/json
+Authorization: Basic {{$dotenv APP_NEXUS_IQ_USERNAME}}:{{$dotenv APP_NEXUS_IQ_PASSWORD}}
+```
+
+That should return some json with application information:
+
+```json
+[
+  {
+    "stage": "release",
+    "applicationId": "...",
+    "evaluationDate": "2020-08-27T12:03:28.181+02:00",
+    "latestReportHtmlUrl": "ui/links/application/.../latestReport/release",
+    "reportHtmlUrl": "ui/links/application/.../report/...",
+    "embeddableReportHtmlUrl": "ui/links/application/.../report/.../embeddable",
+    "reportPdfUrl": "ui/links/application/.../report/.../pdf",
+    "reportDataUrl": "api/v2/applications/.../reports/.../raw"
+  },
+  ...
+```
+
+### Running locally
 
 There are several equivalent ways to do so.
 
-### With Maven
+#### With Maven
 
-```
+```shell
+#load env variable
+. .env
 mvn spring-boot:run
 ```
-Possibly with option `-Dspring-boot.run.jvmArguments="-Dcodegen.skip"`.
 
-### With the JAR file
+#### With the JAR file
 
-```
+```shell
+#load env variable
+. .env
 $JAVA_HOME/bin/java -jar target/nexus-iq-dashboard-extractor-<VERSION>.jar
 ```
-
-### With IntelliJ
-
-If you use the IntelliJ IDE, running the application from there is the most
-convenient way.
-
-Just run class `Application`.
-
-## Output
+### Output
 
 Running the application generates a JSON output file `result_<DATE>.json` in
 subdirectory `output`.
 The JSON file consists in an array of reports.
 Example of a report:
-```
+
+```json
 {
     "organizationName": "SOME-DEPARTMENT-OF-THE-ORGANIZATION",
     "applicationName": "SOME-APPLICATION",
@@ -109,7 +130,7 @@ Example of a report:
 },
 ```
 
-# Running the application at État de Genève
+## Running the application at État de Genève
 
 The instructions for releasing the application, deploying it and making Splunk
 leverage the output are provided in a separate Git project stored in
@@ -119,7 +140,7 @@ Note that the file `application.yml` embedded in the JAR file can easily be
 overridden, for example by using the JVM option
 `-Dspring.config.location=file:path_to_file_application_yml`.
 
-# Miscellaneous
+## Miscellaneous
 
 Nexus IQ's Open API is quite large and this application uses only a very small
 fraction of it.
@@ -134,3 +155,7 @@ project's continuous integration.
 In particular, the workflow spawns a Sonar analysis; the detected issues
 can be viewed in the
 [SonarCloud project](https://sonarcloud.io/project/overview?id=republique-et-canton-de-geneve_nexus-iq-dashboard-extractor).
+
+## Limitation
+
+This code do not work if you use http proxy to acces nexus iq.
